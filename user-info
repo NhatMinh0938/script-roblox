@@ -1,5 +1,3 @@
--- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERID ]]
-
 local SCTIPY_KEY = "" -- Truyền vào cho mọi script
 
 -- Cấu hình danh sách User và Script tương ứng
