@@ -1,123 +1,243 @@
-local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
+-- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERID ]]
 
--- Khởi tạo hoặc xóa UI cũ
-local uiName = "ModernUserInfo"
-local oldUI = game:GetService("CoreGui"):FindFirstChild(uiName) or lp.PlayerGui:FindFirstChild(uiName)
-if oldUI then oldUI:Destroy() end
+local SCTIPY_KEY = "" -- Truyền vào cho mọi script
 
-local sg = Instance.new("ScreenGui")
-sg.Name = uiName
-sg.ResetOnSpawn = false
-sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+-- Cấu hình danh sách User và Script tương ứng
+-- Một user có thể nằm trong nhiều bảng nếu muốn chạy nhiều script (loop qua table)
+local UserConfigs = {
+    ["kaitun"] = {
+        8409363613, -- ID của bạn
+        1234567890, -- Thêm ID người khác vào đây
+    },
+    ["kaitunv4"] = {
+        -- Thêm ID muốn chạy v4 vào đây
+    },
+    ["bounty"] = {
+        -- Thêm ID muốn chạy bounty vào đây
+    }
+    ["main"] = {
+        -- Thêm ID muốn chạy main vào đây
+    }
+}
 
--- Thử chèn vào CoreGui để bảo mật, nếu không thì vào PlayerGui
-local success, err = pcall(function() sg.Parent = game:GetService("CoreGui") end)
-if not success then sg.Parent = lp:WaitForChild("PlayerGui") end
-
--- Frame chính (Nằm ở giữa phía trên)
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 300, 0, 160)
-main.Position = UDim2.new(0.5, -150, 0, 20) -- Góc trên, giữa màn hình
-main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-main.BorderSizePixel = 0
-main.Parent = sg
-
--- Bo góc (Nếu executor hỗ trợ)
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 6)
-corner.Parent = main
-
--- Viền ngoài (Stroke)
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(60, 60, 60)
-stroke.Thickness = 1.5
-stroke.Parent = main
-
--- Hàm tạo dòng thông tin
-local function createInfo(title, value, yOffset)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, -20, 0, 35)
-    container.Position = UDim2.new(0, 10, 0, yOffset)
-    container.BackgroundTransparency = 1
-    container.Parent = main
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.7, 0, 1, 0)
-    label.Text = " " .. title .. ": " .. value
-    label.Font = Enum.Font.SourceSansBold
-    label.TextColor3 = Color3.fromRGB(230, 230, 230)
-    label.TextSize = 16
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.BackgroundTransparency = 1
-    label.Parent = container
-
-    local copy = Instance.new("TextButton")
-    copy.Size = UDim2.new(0.25, 0, 0.7, 0)
-    copy.Position = UDim2.new(0.75, 0, 0.15, 0)
-    copy.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
-    copy.Text = "COPY"
-    copy.Font = Enum.Font.SourceSans
-    copy.TextColor3 = Color3.fromRGB(255, 255, 255)
-    copy.TextSize = 13
-    copy.Parent = container
-
-    Instance.new("UICorner", copy).CornerRadius = UDim.new(0, 4)
-
-    copy.MouseButton1Click:Connect(function()
-        if setclipboard then
-            setclipboard(tostring(value))
-            copy.Text = "DONE"
-            task.wait(0.5)
-            copy.Text = "COPY"
+-- Hàm kiểm tra User có thuộc danh sách nào không
+local function checkUserMode(userId)
+    local activeModes = {}
+    for mode, userList in pairs(UserConfigs) do
+        for _, id in pairs(userList) do
+            if id == userId then
+                table.insert(activeModes, mode)
+            end
         end
-    end)
+    end
+    return activeModes
 end
 
--- Tiêu đề
-local header = Instance.new("TextLabel")
-header.Size = UDim2.new(1, 0, 0, 30)
-header.Text = "PLAYER IDENTIFIER"
-header.Font = Enum.Font.SourceSansBold
-header.TextSize = 14
-header.TextColor3 = Color3.fromRGB(150, 150, 150)
-header.BackgroundTransparency = 1
-header.Parent = main
+-- Định nghĩa các hàm chứa nội dung script
+local Scripts = {
+    ["main"] = function()
+        repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer 
+        getgenv().Key = SCTIPY_KEY 
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/main/BananaHub.lua"))()
+    end,
 
--- Render dữ liệu
-createInfo("Display name", lp.DisplayName, 35)
-createInfo("Username", lp.Name, 75)
-createInfo("UserID", lp.UserId, 115)
+    ["kaitun"] = function()
+        repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+        getgenv().Key = SCRIPT_KEY
+        getgenv().SettingFarm ={
+            ["Hide UI"] = false,
+            ["Reset Teleport"] = {
+                ["Enabled"] = false,
+                ["Delay Reset"] = 3,
+                ["Item Dont Reset"] = {
+                    ["Fruit"] = {
+                        ["Enabled"] = false,
+                        ["All Fruit"] = true, 
+                        ["Select Fruit"] = {
+                            ["Enabled"] = false,
+                            ["Fruit"] = {},
+                        },
+                    },
+                },
+            },
+            ["White Screen"] = false,
+            ["Lock Fps"] = {
+                ["Enabled"] = false,
+                ["FPS"] = 20,
+            },
+            ["Get Items"] = {
+                ["Saber"] = true,
+                ["Godhuman"] =  true,
+                ["Skull Guitar"] = true,
+                ["Mirror Fractal"] = true,
+                ["Cursed Dual Katana"] = true,
+                ["Upgrade Race V2-V3"] = true,
+                ["Auto Pull Lever"] = true,
+                ["Shark Anchor"] = false, --- if have cdk,sg,godhuman
+            },
+            ["Get Rare Items"] = {
+                ["Rengoku"] = false,
+                ["Dragon Trident"] = false, 
+                ["Pole (1st Form)"] = false,
+                ["Gravity Blade"]  = false,
+            },
+            ["Farm Fragments"] = {
+                ["Enabled"]  = false,
+                ["Fragment"] = 50000,
+            },
+            ["Auto Chat"] = {
+                ["Enabled"] = false,
+                ["Text"] = "",
+            },
+            ["Auto Summon Rip Indra"] = true, --- auto buy haki and craft haki legendary 
+            ["Select Hop"] = { -- 70% will have it
+                ["Hop Server If Have Player Near"] = false, 
+                ["Hop Find Rip Indra Get Valkyrie Helm or Get Tushita"] = true, 
+                ["Hop Find Dough King Get Mirror Fractal"] = true,
+                ["Hop Find Raids Castle [CDK]"] = true,
+                ["Hop Find Cake Queen [CDK]"] = true,
+                ["Hop Find Soul Reaper [CDK]"] = true,
+                ["Hop Find Darkbeard [SG]"] = true,
+                ["Hop Find Mirage [ Pull Lever ]"] = true,
+            },
+            ["Farm Mastery"] = {
+                ["Melee"] = false,
+                ["Sword"] = false,
+            },
+            ["Buy Haki"] = {
+                ["Enhancement"] = true,
+                ["Skyjump"] = true,
+                ["Flash Step"] = true,
+                ["Observation"] = true,
+            },
+            ["Sniper Fruit Shop"] = {
+                ["Enabled"] = false, -- Auto Buy Fruit in Shop Mirage and Normal
+                ["Fruit"] = {"Leopard-Leopard","Kitsune-Kitsune","Dragon-Dragon","Yeti-Yeti","Gas-Gas"},
+            },
+            ["Lock Fruit"] = {},
+            ["Webhook"] = {
+                ["Enabled"] = true,
+                ["WebhookUrl"] = "https://discord.com/api/webhooks/1491759792920989818/m5f9ypg6wi0iMySyFc4Lms3NHrnP4wrfmHHsoPDRSKgX3jXARoeZDRGKjDXqGOOhDnqW",
+            }
+        }
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/main/BananaCat-kaitunBF.lua"))()
+    end,
 
--- Nút đóng nhỏ gọn góc phải
-local close = Instance.new("TextButton")
-close.Size = UDim2.new(0, 20, 0, 20)
-close.Position = UDim2.new(1, -25, 0, 5)
-close.BackgroundTransparency = 1
-close.Text = "×"
-close.TextColor3 = Color3.fromRGB(200, 50, 50)
-close.TextSize = 20
-close.Parent = main
-close.MouseButton1Click:Connect(function() sg:Destroy() end)
+    ["kaitunv4"] = function()
+        repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+        getgenv().Key = SCRIPT_KEY
+        getgenv().ConfigV4 = {
+            ["Account Up Gear"] = {
+                ""
+            },
+            ["Account Help"] = {
+                "",
+                ""
+            },
+            ["Method Kick"] = {
+                ["End Moon"] = true,
+            },
+            ["Auto Join"] = true,
+            ["Auto Change Race"] = {
+                ["Enabled"] = false,
+                ["Race"] = {""}
+            },
+            ["Webhook"] = {
+                ["url"] = "https://discord.com/api/webhooks/1461141360676569180/7GWi3CAzE5AS0THCpTwx7j1F6X0IaNZEzuP9jtmvYKblCQRXIZR8h3F-87s9QGfU2mKd",
+                ["Done Train"] = true,
+                ["Done Trial"] = true,
+            }
+        }
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/refs/heads/main/NewV4Config.lua"))()
+    end,
 
--- Script kéo thả để linh hoạt nếu cần
-local dragging, dragInput, dragStart, startPos
-main.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = main.Position
+    ["bounty"] = function()
+        repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+        getgenv().Key = SCRIPT_KEY
+            getgenv().Setting = {
+                ["Team"] = "Pirate",
+                ["Method Click"] = {["Click Gun"] = true ,["Click Melee"] = true,["Click Sword"] = true,["Click Fruit"] = true, ["LowHealth"] = 3000, ["Delay Click"] = 0.3},
+                ["Race V4"] = {["Enable"] = true},
+                ["Webhook"] = {["Enabled"] = true,["Url Webhook"] = "https://discord.com/api/webhooks/1491760580892168263/LKMqWiWeIMDYL_azwqugtxiAhZFzeWpn9pirJyuOpdIdXMySWWPgLVBITvPIng1RreHB"},
+                ["Misc"] = {["AutoBuyRandomandStoreFruit"] = false,["AutoBuySurprise"] = false},
+                ["SafeZone"] = {["Enable"] = true,["LowHealth"] = 3000,["MaxHealth"] = 10000,["Teleport Y"] = 3000},
+                ["Method Use Skill"] = {["Use Random"] = true,["Use Number"] = false},
+                ["Use random skill if player target low health"] = { --- suport only method use skill Number
+                    ["Enabled"] = true,
+                    ["Low Health"] = 4000,
+                },
+                ["Use Portal Teleport"] = true,
+                ["Target Time"] = 20,
+                ["Aim Prediction"] = 0.5,
+                ["Select Region"] = {["Enabled"] = false,["Region"] = {["Singapore"] = true,["United States"] = false,["Netherlands"] = false,["Germany"] =false,["India"] = false,["Australia"] = false}},
+                ["Ignore Devil Fruit"] = {}, 
+                ["Dodge Skill Player"] = true, --- Beta per 50% can dodge 
+                ["Spam Dash"] = false, ---- risk can banned 1 day
+                ["Equip Weapon"] = {
+                    ["Enabled"] = false,
+                    ["Melee"] = {
+                        ["Enabled"] = false,
+                        ["Name Weapon"] = "",
+                    },
+                    ["Sword"] = {
+                        ["Enabled"] = false,
+                        ["Name Weapon"] = "",
+                    },
+                    ["Gun"] = {
+                        ["Enabled"] = false,
+                        ["Name Weapon"] = "",
+                    },
+                },
+                ["Weapons"] = {
+                    ["Melee"] = {
+                        ["Enable"] = true,
+                        ["Skills"] = {
+                            ["Z"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 2},
+                            ["X"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 3},
+                            ["C"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 5},
+                        },
+                    },
+                    ["Blox Fruit"] = {
+                        ["Enable"] = false,
+                        ["Skills"] = {
+                            ["Z"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 4},
+                            ["X"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 6},
+                            ["C"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 9},
+                            ["V"] = {["Enable"] = false,["HoldTime"] = 0.3,["Number"] = 0},
+                            ["F"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 8},
+                        },
+                    },
+                    ["Gun"] = {
+                        ["Enable"] = true,
+                        ["Skills"] = {
+                            ["Z"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 1},
+                            ["X"] = {["Enable"] = true,["HoldTime"] = 0.3,["Number"] = 7},
+                        },
+                    },
+                    ["Sword"] = {
+                        ["Enable"] = true,
+                        ["Skills"] = {
+                            ["Z"] = {["Enable"] = true,["HoldTime"] = 1.5,["Number"] = 0},
+                            ["X"] = {["Enable"] = true,["HoldTime"] = 0.5,["Number"] = 0},
+                        },
+                    },
+                }
+            }
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/refs/heads/main/BananaCat-BountyEz.lua"))()
     end
-end)
-main.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end
-end)
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+}
+
+-- THỰC THI CHÍNH
+local myModes = checkUserMode(lp.UserId)
+
+if #myModes > 0 then
+    -- Nếu User được gán vào 1 hoặc nhiều script, chạy lần lượt
+    for _, mode in pairs(myModes) do
+        print("Đang chạy script chế độ: " .. mode)
+        task.spawn(Scripts[mode]) 
     end
-end)
-game:GetService("UserInputService").InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
-end)
+else
+    -- Nếu không có trong danh sách nào, chạy script main
+    print("User không có trong danh sách, tự động chạy script MAIN")
+    task.spawn(Scripts["main"])
+end
