@@ -9,7 +9,6 @@ local UserConfigs = {
         1234567890, -- Thêm ID người khác vào đây
     },
     ["kaitunv4"] = {
-        8409363613,
     },
     ["bounty"] = {
     },
