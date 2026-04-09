@@ -1,5 +1,5 @@
 -- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERID ]]
-
+-- 1
 local SCRIPT_KEY = getgenv().GlobalKey or ""
 
 -- Cấu hình danh sách User và Script tương ứng
