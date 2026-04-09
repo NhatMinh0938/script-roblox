@@ -85,7 +85,7 @@ header.BackgroundTransparency = 1
 header.Parent = main
 
 -- Render dữ liệu
-createInfo("Display", lp.DisplayName, 35)
+createInfo("Display name", lp.DisplayName, 35)
 createInfo("Username", lp.Name, 75)
 createInfo("UserID", lp.UserId, 115)
 
