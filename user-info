@@ -1,3 +1,5 @@
+-- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERID ]]
+
 local SCRIPT_KEY = getgenv().GlobalKey or ""
 
 -- Cấu hình danh sách User và Script tương ứng
@@ -12,7 +14,7 @@ local UserConfigs = {
     },
     ["bounty"] = {
         -- Thêm ID muốn chạy bounty vào đây
-    }
+    },
     ["main"] = {
         -- Thêm ID muốn chạy main vào đây
     }
@@ -35,7 +37,7 @@ end
 local Scripts = {
     ["main"] = function()
         repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer 
-        getgenv().Key = SCTIPY_KEY 
+        getgenv().Key = SCRIPT_KEY 
         loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/main/BananaHub.lua"))()
     end,
 
