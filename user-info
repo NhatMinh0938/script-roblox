@@ -1,6 +1,7 @@
 -- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERID ]]
 -- 1
 local SCRIPT_KEY = getgenv().GlobalKey or ""
+local lp = game:GetService("Players").LocalPlayer
 
 -- Cấu hình danh sách User và Script tương ứng
 -- Một user có thể nằm trong nhiều bảng nếu muốn chạy nhiều script (loop qua table)
