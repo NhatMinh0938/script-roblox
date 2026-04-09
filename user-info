@@ -6,16 +6,15 @@ local SCRIPT_KEY = getgenv().GlobalKey or ""
 -- Một user có thể nằm trong nhiều bảng nếu muốn chạy nhiều script (loop qua table)
 local UserConfigs = {
     ["kaitun"] = {
-        , -- ID của bạn
         1234567890, -- Thêm ID người khác vào đây
     },
     ["kaitunv4"] = {
-        8409363613
+        8409363613,
     },
     ["bounty"] = {
     },
     ["main"] = {
-    }
+    },
 }
 
 -- Hàm kiểm tra User có thuộc danh sách nào không
