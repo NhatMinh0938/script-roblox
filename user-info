@@ -1,4 +1,4 @@
-local SCTIPY_KEY = "" -- Truyền vào cho mọi script
+local SCRIPT_KEY = getgenv().GlobalKey or ""
 
 -- Cấu hình danh sách User và Script tương ứng
 -- Một user có thể nằm trong nhiều bảng nếu muốn chạy nhiều script (loop qua table)
