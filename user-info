@@ -1,84 +1,123 @@
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- Xóa UI cũ để tránh bị chồng đè nếu chạy lại script
-local oldUI = game:GetService("CoreGui"):FindFirstChild("UserInfoApp") or game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("UserInfoApp")
+-- Khởi tạo hoặc xóa UI cũ
+local uiName = "ModernUserInfo"
+local oldUI = game:GetService("CoreGui"):FindFirstChild(uiName) or lp.PlayerGui:FindFirstChild(uiName)
 if oldUI then oldUI:Destroy() end
 
--- Khởi tạo ScreenGui
 local sg = Instance.new("ScreenGui")
-sg.Name = "UserInfoApp"
+sg.Name = uiName
 sg.ResetOnSpawn = false
--- Thử chèn vào CoreGui (ẩn với hệ thống), nếu không được thì chèn vào PlayerGui
-local success, err = pcall(function()
-    sg.Parent = game:GetService("CoreGui")
-end)
+sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Thử chèn vào CoreGui để bảo mật, nếu không thì vào PlayerGui
+local success, err = pcall(function() sg.Parent = game:GetService("CoreGui") end)
 if not success then sg.Parent = lp:WaitForChild("PlayerGui") end
 
--- Khung nền chính
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 200)
-frame.Position = UDim2.new(0.5, -150, 0.5, -100)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-frame.BorderSizePixel = 2
-frame.BorderColor3 = Color3.fromRGB(60, 60, 60)
-frame.Active = true
-frame.Draggable = true -- Hỗ trợ kéo thả cơ bản
-frame.Parent = sg
+-- Frame chính (Nằm ở giữa phía trên)
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 300, 0, 160)
+main.Position = UDim2.new(0.5, -150, 0, 20) -- Góc trên, giữa màn hình
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+main.BorderSizePixel = 0
+main.Parent = sg
 
--- Tiêu đề bảng
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "USER INFORMATION"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-title.BorderSizePixel = 0
-title.Parent = frame
+-- Bo góc (Nếu executor hỗ trợ)
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 6)
+corner.Parent = main
 
--- Hàm tạo dòng dữ liệu (Dùng hàm này để code sạch và ít lỗi)
-local function addRow(labelName, value, yPos)
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 200, 0, 20)
-    lbl.Position = UDim2.new(0, 10, 0, yPos)
-    lbl.Text = labelName .. ": " .. value
-    lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.BackgroundTransparency = 1
-    lbl.Parent = frame
+-- Viền ngoài (Stroke)
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(60, 60, 60)
+stroke.Thickness = 1.5
+stroke.Parent = main
 
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 60, 0, 20)
-    btn.Position = UDim2.new(0, 230, 0, yPos)
-    btn.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
-    btn.Text = "COPY"
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Parent = frame
+-- Hàm tạo dòng thông tin
+local function createInfo(title, value, yOffset)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -20, 0, 35)
+    container.Position = UDim2.new(0, 10, 0, yOffset)
+    container.BackgroundTransparency = 1
+    container.Parent = main
 
-    btn.MouseButton1Click:Connect(function()
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.7, 0, 1, 0)
+    label.Text = " " .. title .. ": " .. value
+    label.Font = Enum.Font.SourceSansBold
+    label.TextColor3 = Color3.fromRGB(230, 230, 230)
+    label.TextSize = 16
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.BackgroundTransparency = 1
+    label.Parent = container
+
+    local copy = Instance.new("TextButton")
+    copy.Size = UDim2.new(0.25, 0, 0.7, 0)
+    copy.Position = UDim2.new(0.75, 0, 0.15, 0)
+    copy.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+    copy.Text = "COPY"
+    copy.Font = Enum.Font.SourceSans
+    copy.TextColor3 = Color3.fromRGB(255, 255, 255)
+    copy.TextSize = 13
+    copy.Parent = container
+
+    Instance.new("UICorner", copy).CornerRadius = UDim.new(0, 4)
+
+    copy.MouseButton1Click:Connect(function()
         if setclipboard then
             setclipboard(tostring(value))
-            btn.Text = "DONE"
-            task.wait(1)
-            btn.Text = "COPY"
-        else
-            btn.Text = "ERR: NO CLIP"
+            copy.Text = "DONE"
+            task.wait(0.5)
+            copy.Text = "COPY"
         end
     end)
 end
 
--- Hiển thị thông tin
-addRow("Display", lp.DisplayName, 50)
-addRow("Username", lp.Name, 90)
-addRow("UserID", lp.UserId, 130)
+-- Tiêu đề
+local header = Instance.new("TextLabel")
+header.Size = UDim2.new(1, 0, 0, 30)
+header.Text = "PLAYER IDENTIFIER"
+header.Font = Enum.Font.SourceSansBold
+header.TextSize = 14
+header.TextColor3 = Color3.fromRGB(150, 150, 150)
+header.BackgroundTransparency = 1
+header.Parent = main
 
--- Nút đóng
+-- Render dữ liệu
+createInfo("Display", lp.DisplayName, 35)
+createInfo("Username", lp.Name, 75)
+createInfo("UserID", lp.UserId, 115)
+
+-- Nút đóng nhỏ gọn góc phải
 local close = Instance.new("TextButton")
-close.Size = UDim2.new(0, 280, 0, 30)
-close.Position = UDim2.new(0, 10, 0, 165)
-close.BackgroundColor3 = Color3.fromRGB(120, 50, 50)
-close.Text = "CLOSE"
-close.TextColor3 = Color3.fromRGB(255, 255, 255)
-close.Parent = frame
+close.Size = UDim2.new(0, 20, 0, 20)
+close.Position = UDim2.new(1, -25, 0, 5)
+close.BackgroundTransparency = 1
+close.Text = "×"
+close.TextColor3 = Color3.fromRGB(200, 50, 50)
+close.TextSize = 20
+close.Parent = main
 close.MouseButton1Click:Connect(function() sg:Destroy() end)
 
-print("User Info Script Loaded!")
+-- Script kéo thả để linh hoạt nếu cần
+local dragging, dragInput, dragStart, startPos
+main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+    end
+end)
+main.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end
+end)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+game:GetService("UserInputService").InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+end)
