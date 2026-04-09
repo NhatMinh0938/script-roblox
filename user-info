@@ -1,0 +1,84 @@
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+
+-- Xóa UI cũ để tránh bị chồng đè nếu chạy lại script
+local oldUI = game:GetService("CoreGui"):FindFirstChild("UserInfoApp") or game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("UserInfoApp")
+if oldUI then oldUI:Destroy() end
+
+-- Khởi tạo ScreenGui
+local sg = Instance.new("ScreenGui")
+sg.Name = "UserInfoApp"
+sg.ResetOnSpawn = false
+-- Thử chèn vào CoreGui (ẩn với hệ thống), nếu không được thì chèn vào PlayerGui
+local success, err = pcall(function()
+    sg.Parent = game:GetService("CoreGui")
+end)
+if not success then sg.Parent = lp:WaitForChild("PlayerGui") end
+
+-- Khung nền chính
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+frame.BorderSizePixel = 2
+frame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+frame.Active = true
+frame.Draggable = true -- Hỗ trợ kéo thả cơ bản
+frame.Parent = sg
+
+-- Tiêu đề bảng
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "USER INFORMATION"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+title.BorderSizePixel = 0
+title.Parent = frame
+
+-- Hàm tạo dòng dữ liệu (Dùng hàm này để code sạch và ít lỗi)
+local function addRow(labelName, value, yPos)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(0, 200, 0, 20)
+    lbl.Position = UDim2.new(0, 10, 0, yPos)
+    lbl.Text = labelName .. ": " .. value
+    lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.BackgroundTransparency = 1
+    lbl.Parent = frame
+
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 60, 0, 20)
+    btn.Position = UDim2.new(0, 230, 0, yPos)
+    btn.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
+    btn.Text = "COPY"
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Parent = frame
+
+    btn.MouseButton1Click:Connect(function()
+        if setclipboard then
+            setclipboard(tostring(value))
+            btn.Text = "DONE"
+            task.wait(1)
+            btn.Text = "COPY"
+        else
+            btn.Text = "ERR: NO CLIP"
+        end
+    end)
+end
+
+-- Hiển thị thông tin
+addRow("Display", lp.DisplayName, 50)
+addRow("Username", lp.Name, 90)
+addRow("UserID", lp.UserId, 130)
+
+-- Nút đóng
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(0, 280, 0, 30)
+close.Position = UDim2.new(0, 10, 0, 165)
+close.BackgroundColor3 = Color3.fromRGB(120, 50, 50)
+close.Text = "CLOSE"
+close.TextColor3 = Color3.fromRGB(255, 255, 255)
+close.Parent = frame
+close.MouseButton1Click:Connect(function() sg:Destroy() end)
+
+print("User Info Script Loaded!")
