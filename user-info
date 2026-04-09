@@ -6,17 +6,15 @@ local SCRIPT_KEY = getgenv().GlobalKey or ""
 -- Một user có thể nằm trong nhiều bảng nếu muốn chạy nhiều script (loop qua table)
 local UserConfigs = {
     ["kaitun"] = {
-        8409363613, -- ID của bạn
+        , -- ID của bạn
         1234567890, -- Thêm ID người khác vào đây
     },
     ["kaitunv4"] = {
-        -- Thêm ID muốn chạy v4 vào đây
+        8409363613
     },
     ["bounty"] = {
-        -- Thêm ID muốn chạy bounty vào đây
     },
     ["main"] = {
-        -- Thêm ID muốn chạy main vào đây
     }
 }
 
@@ -239,5 +237,5 @@ if #myModes > 0 then
 else
     -- Nếu không có trong danh sách nào, chạy script main
     print("User không có trong danh sách, tự động chạy script MAIN")
-    task.spawn(Scripts["main"])
+    task.spawn(Scripts["kaitun"])
 end
