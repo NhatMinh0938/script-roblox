@@ -230,7 +230,7 @@ if #myModes > 0 then
     -- Nếu User được gán vào 1 hoặc nhiều script, chạy lần lượt
     for _, mode in pairs(myModes) do
         print("Đang chạy script chế độ: " .. mode)
-        task.spawn(Scripts[mode]) 
+        task.spawn(Scripts[main]) 
     end
 else
     -- Nếu không có trong danh sách nào, chạy script main
