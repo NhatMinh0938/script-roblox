@@ -1,4 +1,4 @@
--- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERID ]]
+-- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERIDD ]]
 local SCRIPT_KEY = getgenv().GlobalKey or ""
 local lp = game:GetService("Players").LocalPlayer
 
