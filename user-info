@@ -4,26 +4,32 @@ local lp = game:GetService("Players").LocalPlayer
 
 -- Cấu hình danh sách User và Script tương ứng
 -- Một user có thể nằm trong nhiều bảng nếu muốn chạy nhiều script (loop qua table)
-local UserConfigs = {
-    ["kaitun"] = {
-        1234567890, -- Thêm ID người khác vào đây
-    },
-    ["kaitunv4"] = {
-        8409363613,
-    },
-    ["bounty"] = {
-    },
-    ["main"] = {
-    },
+local UserConfigs = getgenv().Config or {
+    ["kaitun"] = {},
+    ["kaitunv4"] = {},
+    ["bounty"] = {},
+    ["main"] = {},
 }
 
 -- Hàm kiểm tra User có thuộc danh sách nào không
-local function checkUserMode(userId)
+local function checkUserMode()
     local activeModes = {}
+    local currentId = lp.UserId
+    local currentName = lp.Name
+
     for mode, userList in pairs(UserConfigs) do
-        for _, id in pairs(userList) do
-            if id == userId then
-                table.insert(activeModes, mode)
+        for _, identifier in pairs(userList) do
+            if type(identifier) == "string" and identifier:sub(1,1) == "@" then
+                -- Nếu bắt đầu bằng @, so sánh Username (bỏ ký tự @ đi)
+                local targetName = identifier:sub(2)
+                if currentName == targetName then
+                    table.insert(activeModes, mode)
+                end
+            else
+                -- Nếu là số (hoặc string số), so sánh UserId
+                if tonumber(identifier) == currentId then
+                    table.insert(activeModes, mode)
+                end
             end
         end
     end
@@ -225,16 +231,17 @@ local Scripts = {
 }
 
 -- THỰC THI CHÍNH
-local myModes = checkUserMode(lp.UserId)
+local myModes = checkUserMode()
 
 if #myModes > 0 then
-    -- Nếu User được gán vào 1 hoặc nhiều script, chạy lần lượt
     for _, mode in pairs(myModes) do
-        print("Đang chạy script chế độ: " .. mode)
-        task.spawn(Scripts[mode]) 
+        if Scripts[mode] then
+            print("Đang chạy script chế độ: " .. mode)
+            task.spawn(Scripts[mode])
+        end
     end
 else
-    -- Nếu không có trong danh sách nào, chạy script main
-    print("User không có trong danh sách, tự động chạy script MAIN")
+    -- Nếu không có trong danh sách nào, chạy script mặc định
+    print("User không có trong danh sách (ID: "..lp.UserId.."), tự động chạy KAITUN")
     task.spawn(Scripts["kaitun"])
 end
