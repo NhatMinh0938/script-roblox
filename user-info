@@ -1,4 +1,4 @@
--- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERIDD ]]
+-- [[ PHẦN QUẢN LÝ TỰ ĐỘNG CHẠY SCRIPT THEO USERID VÀ USERNAME ]]
 local SCRIPT_KEY = getgenv().GlobalKey or ""
 local lp = game:GetService("Players").LocalPlayer
 
@@ -15,13 +15,13 @@ local UserConfigs = getgenv().Config or {
 local function checkUserMode()
     local activeModes = {}
     local currentId = lp.UserId
-    local currentName = lp.Name
+    local currentName = lp.Name:lower()
 
     for mode, userList in pairs(UserConfigs) do
         for _, identifier in pairs(userList) do
             if type(identifier) == "string" and identifier:sub(1,1) == "@" then
                 -- Nếu bắt đầu bằng @, so sánh Username (bỏ ký tự @ đi)
-                local targetName = identifier:sub(2)
+                local targetName = identifier:sub(2):lower()
                 if currentName == targetName then
                     table.insert(activeModes, mode)
                 end
